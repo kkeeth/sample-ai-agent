@@ -1,0 +1,19 @@
+{
+  "name": "sample-ai-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "開発合宿用のAIエージェント・テンプレート",
+  "scripts": {
+    "check": "bun run scripts/check.ts",
+    "agent": "bun run src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.7.0"
+  }
+}
