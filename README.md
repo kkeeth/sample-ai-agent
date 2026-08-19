@@ -135,6 +135,7 @@ export const WRITE_TOOLS = new Set(["write_note", "post_slack"]);
 | 症状 | 見るところ |
 | --- | --- |
 | `bun install` が固まる | プロキシ設定（`HTTPS_PROXY`） |
+| `check` で 400 (credit balance) | **残高不足。キーもネットワークも正常。** ①API クレジットを買ったか（Claude Pro/Max のプランとは別会計）②ワークスペースの spend limit。`check` がワークスペースIDを出すので運営に伝える |
 | `check` で 401 | `.env` のキーが違う |
 | `check` で 429 | レート上限。運営に連絡 |
 | `check` でネットワークエラー | プロキシ / VPN |
@@ -151,3 +152,4 @@ export const WRITE_TOOLS = new Set(["write_note", "post_slack"]);
 - [運営ランブック](docs/01-runbook.md) — 準備チェックリスト（運営向け）
 - [電話越しの現場監督](docs/02-agent-primer.md) — AIエージェントとは何か
 - [キックオフ台本](docs/03-kickoff-script.md) — 初日朝の説明資料（運営向け）
+- [作る順番](docs/04-build-order.md) — このテンプレートをゼロから組み立てる手順と確認方法
