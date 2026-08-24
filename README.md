@@ -141,6 +141,7 @@ export const WRITE_TOOLS = new Set(["write_note", "post_slack"]);
 | `check` で 429 | レート上限。運営に連絡 |
 | `check` でネットワークエラー | プロキシ / VPN |
 | 「ファイルを読む手段がありません」と返る | **`tools` が空。** チャットUIの案内文が出たらこの症状 |
+| 400 `non-empty content` | ツールが空文字を返している、または実行要求が空。`tools.ts` の `runTool` と `agent.ts` の `results.length === 0` を確認 |
 | ツールを呼んでくれない | `tools.length` が 0 でないか → `description` に「いつ使うか」が書かれているか |
 | 同じツールを呼び続ける | 戻り値が期待と違う。ログの `→` 行を見る |
 | 精度が出ない | ①description ②ツールの戻り値 ③システムプロンプト の順に疑う |

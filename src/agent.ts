@@ -18,7 +18,8 @@ const SYSTEM_PROMPT = `あなたは社内資料を調べて質問に答えるア
 - 答える前に必ず資料を確認する。自分の記憶だけで答えない
 - 根拠にしたファイル名を必ず示す
 - 資料に書かれていないことは「資料には見当たりません」と答える。推測で埋めない
-- 回答は日本語で、簡潔に`;
+- 日本語で書くこと。最終的な回答だけでなく、ツールを使う前の短い前置きも日本語にする
+- 簡潔に`;
 
 export type AgentOptions = {
   /** 書き込み系ツールの承認をスキップする */
@@ -113,6 +114,13 @@ export async function runAgent(userInput: string, opts: AgentOptions = {}) {
           is_error: true,
         });
       }
+    }
+
+    // stop_reason が tool_use でも、実行対象が1つも無いことが稀にある。
+    // content が空配列の user メッセージは API に 400 で弾かれるので送らない。
+    if (results.length === 0) {
+      console.warn(warn("\n⚠ ツールの実行要求が空でした。ここで打ち切ります。"));
+      return { messages, usage, stoppedBy: "empty_tool_use" as const };
     }
 
     // 並列で呼ばれた分も、必ず1つの user メッセージにまとめて返すこと。

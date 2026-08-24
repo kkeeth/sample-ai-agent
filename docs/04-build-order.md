@@ -802,6 +802,67 @@ bun run scratch.ts "../package.json の中身を教えて"
 
 > **エラーを握りつぶさないこと。** `catch` で無視すると、モデルは何が起きたか分からず**同じ失敗を延々と繰り返します**。`is_error: true` を付けて返せば、モデルが自分で方針を変えます。
 
+### 「空」を送らないガードを2つ入れる
+
+ここで一緒に塞いでおきます。**どちらも API から 400 が返る**のに、原因がループのバグだと気づきにくい種類の失敗です。
+
+```
+400 messages.4: user messages must have non-empty content
+```
+
+**再現が「たまに」なので、当日は「たまたま落ちた」ようにしか見えません。** ツールを増やすほど踏みやすくなるので、先に塞ぎます。
+
+#### ガード① 空の `results` を送らない
+
+`stop_reason` が `tool_use` なのに、`tool_use` ブロックが1つも入っていないことが稀にあります。そのまま進むと `content: []` の user メッセージができて弾かれます。
+
+```diff
++    // stop_reason が tool_use でも、実行対象が1つも無いことが稀にある。
++    // content が空配列の user メッセージは 400 で弾かれるので送らない。
++    if (results.length === 0) {
++      console.warn(`\n⚠ ツールの実行要求が空でした。ここで打ち切ります。`);
++      break;
++    }
++
+     messages.push({ role: "user", content: results });
+```
+
+#### ガード② 空文字の `tool_result` を作らない
+
+`read_file` で中身が空のファイルを読むと `""` が返ります。これも `tool_result` の中身として不正です。
+
+**ツールごとに直すのではなく、入口1箇所で塞ぎます。** こうしておけば、あとからツールを増やしても自動で守られます。
+
+```diff
+-async function runTool(name: string, input: any): Promise<string> {
++export async function runTool(name: string, input: any): Promise<string> {
++  // 空文字の tool_result は API に弾かれるので、必ず何か返す
++  return (await dispatch(name, input)) || "（空の結果が返りました）";
++}
++
++async function dispatch(name: string, input: any): Promise<string> {
+   switch (name) {
+     case "read_file":    return clip(await readFile(safePath(input.path), "utf-8"));
+     case "list_files":   return (await walk(ROOT)).join("\n");
+     case "search_files": return clip(await searchFiles(input.query));
+     default:             return `不明なツール: ${name}`;
+   }
+ }
+```
+
+#### 確認
+
+空のファイルを置いて、読ませます。
+
+```bash
+touch workspace/docs/empty.md
+bun run scratch.ts "empty.md には何が書いてある?"
+```
+
+**成功:** 400 にならず、モデルが「空のようです」と答えて終了する。確認できたら `rm workspace/docs/empty.md` で消しておきます。
+
+> **「空」は例外より厄介です。** エラーなら `catch` で拾えますが、空文字は正常な戻り値として素通りして、API の入口で初めて弾かれます。**ツールの戻り値は「必ず1文字以上」を不変条件にしておく**のが安全です。
+
 ---
 
 ## Step 8 ── 書き込みツールと承認ゲート
@@ -1080,6 +1141,7 @@ cd test-clone
 | 層 | 確認方法 | 通らないときに見るところ |
 | --- | --- | --- |
 | 1. 認証・回線 | `bun run check` | `.env` / 残高 / プロキシ |
+| 1.5 リクエストの組み立て | 400 が返るか | `non-empty content` なら Step 7 のガード2つ |
 | 2. ツール単体 | ツール関数を直接呼ぶ | 普通のプログラミングのバグ |
 | 3. モデルがツールを選ぶ | ログの `→` 行が出るか | まず `tools.length` が 0 でないか。次に `description` に「いつ使うか」があるか |
 | 4. モデルの回答品質 | 最終出力 | ツールの戻り値 → システムプロンプト の順 |

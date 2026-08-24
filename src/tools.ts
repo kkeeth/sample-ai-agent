@@ -84,6 +84,11 @@ export const WRITE_TOOLS = new Set(["write_note"]);
  * ------------------------------------------------------------------
  */
 export async function runTool(name: string, input: unknown): Promise<string> {
+  // 空文字の tool_result は API に弾かれるので、必ず何か返す
+  return (await dispatch(name, input)) || "（空の結果が返りました）";
+}
+
+async function dispatch(name: string, input: unknown): Promise<string> {
   const args = (input ?? {}) as Record<string, string>;
 
   switch (name) {
