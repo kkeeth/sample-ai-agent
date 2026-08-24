@@ -24,6 +24,67 @@
 
 ---
 
+# 何を見ながら書くか
+
+`scratch.ts` の書き方は、3階層のドキュメントに分かれています。**探す場所が違うだけで、全部ちゃんと書いてあります。**
+
+### ① API の仕様 ── 何を送ると何が返るか
+
+言語に関係ない一次情報です。`tools` のスキーマ、`tool_use` / `tool_result` ブロックの形はここが正。
+
+| 見たいもの | URL |
+| --- | --- |
+| **ツール使用の全体像**（まずここ） | https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview |
+| エージェントの作り方 | https://platform.claude.com/docs/en/agents-and-tools/agents |
+| モデルIDと価格 | https://platform.claude.com/docs/en/about-claude/models/overview |
+| エラーコードの意味 | https://platform.claude.com/docs/en/api/errors |
+| 構造化出力（JSONを保証する） | https://platform.claude.com/docs/en/build-with-claude/structured-outputs |
+| プロンプトキャッシュ | https://platform.claude.com/docs/en/build-with-claude/prompt-caching |
+
+> 💡 **URLの末尾に `.md` を付けると、生の Markdown が返ります。**
+> `https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md`
+> Claude Code に「このURLを読んで」と渡すときはこちらが速いです。
+
+### ② SDK の使い方 ── TypeScript でどう書くか
+
+```
+node_modules/@anthropic-ai/sdk/README.md
+```
+
+https://github.com/anthropics/anthropic-sdk-typescript にも同じものがあります。`messages.create()` の呼び方、ストリーミング、エラークラス、リトライ設定などはここ。
+
+### ③ 型定義 ── 実務ではこれがいちばん速い
+
+```
+node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts
+```
+
+`Anthropic.Tool` にカーソルを置いて **定義ジャンプ**（VS Code なら `F12`）すると、そのまま読めます。
+
+このファイルに、この手順書で使う型が全部あります。
+
+| 型 | 何を表すか |
+| --- | --- |
+| `Anthropic.Tool` | ツールの定義（名簿の1行） |
+| `Anthropic.MessageParam` | `messages` 配列の1要素 |
+| `Anthropic.ToolUseBlock` | モデルが返してくる「これを呼べ」 |
+| `Anthropic.ToolResultBlockParam` | こちらが返す実行結果 |
+| `Anthropic.Message` | API のレスポンス全体 |
+
+**型を見れば「何を書けるか」が分かります。** `input_schema` に何が入るのか、`tool_result` に `is_error` を付けられるのか、といった疑問は、ドキュメントを探すより定義ジャンプのほうが速いことが多いです。
+
+### 迷ったときの探し方
+
+| 症状 | 見るところ |
+| --- | --- |
+| リクエストの形が分からない | ① の Tool use overview |
+| TypeScript での書き方が分からない | ③ の型定義に飛ぶ |
+| このプロパティ何が入るんだっけ | ③ の型定義 |
+| エラーの意味が分からない | ① の Errors |
+| そもそも設計が分からない | ① の Agents |
+
+---
+
 # フェーズ1 ── まず動かす
 
 ## Step 0 ── API を1発叩く
