@@ -1,9 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { readFile, readdir } from "node:fs/promises";
-import { join } from "node:path";
+import { join, resolve, relative } from "node:path";
 
 const client = new Anthropic();
-const ROOT = "workspace";
+const ROOT = resolve("workspace");
+const MAX_TOOL_OUTPUT_CHARS = 8_000;
 const MAX_TURNS = 20;
 const PRICE = { input: 5.0, output: 25.0 };  // $ / 1M tokens
 let finished = false;
@@ -41,12 +42,27 @@ const tools: Anthropic.Tool[] = [
   },
 ];
 
+/** workspace/ の外に出ようとしたら止める。ツールを増やすときも必ず通すこと */
+function safePath(p: string): string {
+  const abs = resolve(ROOT, p);
+  if (relative(ROOT, abs).startsWith("..")) {
+    throw new Error(`資料フォルダの外にはアクセスできません: ${p}`);
+  }
+  return abs;
+}
+
+/** 長い戻り値は以降の全周回で送り直されるので、ここで切る */
+function clip(text: string): string {
+  if (text.length <= MAX_TOOL_OUTPUT_CHARS) return text;
+  return text.slice(0, MAX_TOOL_OUTPUT_CHARS) + "\n\n…（長すぎるため打ち切りました）";
+}
+
 async function walk(dir: string, acc: string[] = []): Promise<string[]> {
   for (const e of await readdir(dir, { withFileTypes: true })) {
     if (e.name.startsWith(".")) continue;
     const full = join(dir, e.name);
     if (e.isDirectory()) await walk(full, acc);
-    else acc.push(full.slice(ROOT.length + 1));
+    else acc.push(relative(ROOT, full));
   }
   return acc.sort();
 }
@@ -63,11 +79,16 @@ async function searchFiles(query: string): Promise<string> {
 }
 
 // ツールの実装。ただの関数
-async function runTool(name: string, input: any): Promise<string> {
+export async function runTool(name: string, input: any): Promise<string> {
+  // 空文字の tool_result は API に弾かれるので、必ず何か返す
+  return (await dispatch(name, input)) || "（空の結果が返りました）";
+}
+
+async function dispatch(name: string, input: any): Promise<string> {
   switch (name) {
-    case "read_file":    return await readFile(join(ROOT, input.path), "utf-8");
+    case "read_file":    return clip(await readFile(safePath(input.path), "utf-8"));
     case "list_files":   return (await walk(ROOT)).join("\n");
-    case "search_files": return await searchFiles(input.query);
+    case "search_files": return clip(await searchFiles(input.query));
     default:             return `不明なツール: ${name}`;
   }
 }
@@ -105,11 +126,27 @@ for (let turn = 1; turn <= MAX_TURNS; turn++) {
   for (const b of res.content) {
     if (b.type !== "tool_use") continue;
     console.log(`  → ${b.name}(${JSON.stringify(b.input)})`);
-    results.push({
-      type: "tool_result",
-      tool_use_id: b.id,
-      content: await runTool(b.name, b.input),
-    });
+    try {
+      results.push({
+        type: "tool_result",
+        tool_use_id: b.id,
+        content: await runTool(b.name, b.input),
+      });
+    } catch (e) {
+      results.push({
+        type: "tool_result",
+        tool_use_id: b.id,
+        content: `エラー: ${(e as Error).message}`,
+        is_error: true,
+      });
+    }
+  }
+
+  // stop_reason が tool_use でも、実行対象が1つも無いことが稀にある。
+  // content が空配列の user メッセージは 400 で弾かれるので送らない。
+  if (results.length === 0) {
+    console.warn(`\n⚠ ツールの実行要求が空でした。ここで打ち切ります。`);
+    break;
   }
 
   messages.push({ role: "user", content: results });   // 必ず1つにまとめる
