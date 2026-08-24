@@ -7,7 +7,8 @@
   "scripts": {
     "check": "bun run scripts/check.ts",
     "agent": "bun run src/cli.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "measure": "bun run scripts/measure.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1"

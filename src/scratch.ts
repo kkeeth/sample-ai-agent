@@ -1,10 +1,14 @@
-// scratch.ts
 import Anthropic from "@anthropic-ai/sdk";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const client = new Anthropic();
 const ROOT = "workspace";
+const MAX_TURNS = 20;
+const PRICE = { input: 5.0, output: 25.0 };  // $ / 1M tokens
+let finished = false;
+let totalIn = 0;
+let totalOut = 0;
 
 const tools: Anthropic.Tool[] = [
   {
@@ -72,7 +76,8 @@ const messages: Anthropic.MessageParam[] = [
   { role: "user", content: process.argv[2] ?? "経費精算の締め切りは?" },
 ];
 
-while (true) {
+// while (true) {
+for (let turn = 1; turn <= MAX_TURNS; turn++) {
   const res = await client.messages.create({
     model: "claude-opus-5",
     max_tokens: 16000,
@@ -80,13 +85,21 @@ while (true) {
     messages,                       // ← 毎回まるごと送っている
   });
 
+  totalIn += res.usage.input_tokens;
+  totalOut += res.usage.output_tokens;
+  const cost = (totalIn * PRICE.input + totalOut * PRICE.output) / 1_000_000;
+  console.log(
+    `  [${turn}周目] in ${res.usage.input_tokens} / out ${res.usage.output_tokens}` +
+    ` / 累計 $${cost.toFixed(4)}`,
+  );
+
   for (const b of res.content) {
     if (b.type === "text") console.log(b.text);
   }
 
   messages.push({ role: "assistant", content: res.content });
 
-  if (res.stop_reason !== "tool_use") break;   // モデルが「もう終わり」と言った
+  if (res.stop_reason !== "tool_use") { finished = true; break; }   // モデルが「もう終わり」と言った
 
   const results: Anthropic.ToolResultBlockParam[] = [];
   for (const b of res.content) {
@@ -100,4 +113,9 @@ while (true) {
   }
 
   messages.push({ role: "user", content: results });   // 必ず1つにまとめる
+}
+
+if (!finished) {
+  console.warn(`⚠ 最大 ${MAX_TURNS} 周に達したので打ち切りました。`);
+  console.warn(`  同じツールを呼び続けていないか、上のログを見てください。`);
 }
