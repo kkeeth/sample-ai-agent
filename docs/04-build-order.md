@@ -30,20 +30,36 @@
 
 ### ① API の仕様 ── 何を送ると何が返るか
 
-言語に関係ない一次情報です。`tools` のスキーマ、`tool_use` / `tool_result` ブロックの形はここが正。
+言語に関係ない一次情報です。**この手順書のステップと、ほぼ1対1で対応しています。**
+
+| この手順書の | 読むページ |
+| --- | --- |
+| 全体像を掴む | [Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) |
+| **Step 1**（名簿を書く） | [Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools) |
+| **Step 2**（ループを閉じる） | [Handle tool calls](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls) |
+| **Step 4**（description を直す） | [Define tools → Best practices](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools) |
+| ループを自分で書きたくない | [Tool Runner](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner) |
+| 使えるツールの一覧・オプション | [Tool reference](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-reference) |
+
+そのほか、必要になったときに。
 
 | 見たいもの | URL |
 | --- | --- |
-| **ツール使用の全体像**（まずここ） | https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview |
-| エージェントの作り方 | https://platform.claude.com/docs/en/agents-and-tools/agents |
 | モデルIDと価格 | https://platform.claude.com/docs/en/about-claude/models/overview |
 | エラーコードの意味 | https://platform.claude.com/docs/en/api/errors |
-| 構造化出力（JSONを保証する） | https://platform.claude.com/docs/en/build-with-claude/structured-outputs |
+| 出力の形を保証する | https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use |
+| JSONスキーマで返させる | https://platform.claude.com/docs/en/build-with-claude/structured-outputs |
 | プロンプトキャッシュ | https://platform.claude.com/docs/en/build-with-claude/prompt-caching |
+| thinking の設定 | https://platform.claude.com/docs/en/build-with-claude/thinking |
+| ツール設計の考え方（読み物） | https://www.anthropic.com/engineering/writing-tools-for-agents |
 
 > 💡 **URLの末尾に `.md` を付けると、生の Markdown が返ります。**
-> `https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md`
+> `https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools.md`
 > Claude Code に「このURLを読んで」と渡すときはこちらが速いです。
+
+> **公式も同じことを言っています。** Define tools の Best practices に、
+> *"Provide extremely detailed descriptions. **This is by far the most important factor in tool performance.**"*
+> とあります。Step 4 でわざと失敗させるのは、これを体で確認するためです。
 
 ### ② SDK の使い方 ── TypeScript でどう書くか
 
@@ -71,17 +87,18 @@ node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts
 | `Anthropic.ToolResultBlockParam` | こちらが返す実行結果 |
 | `Anthropic.Message` | API のレスポンス全体 |
 
-**型を見れば「何を書けるか」が分かります。** `input_schema` に何が入るのか、`tool_result` に `is_error` を付けられるのか、といった疑問は、ドキュメントを探すより定義ジャンプのほうが速いことが多いです。
+**型を見れば「何を書けるか」が分かります。** 「`input_schema` に何が入るのか」「`tool_result` に `is_error` を付けられるのか」といった疑問は、ドキュメントを探すより定義ジャンプのほうが速いことが多いです。
 
 ### 迷ったときの探し方
 
 | 症状 | 見るところ |
 | --- | --- |
 | リクエストの形が分からない | ① の Tool use overview |
+| ツール定義の書き方 | ① の Define tools |
+| ループの組み方 | ① の Handle tool calls |
 | TypeScript での書き方が分からない | ③ の型定義に飛ぶ |
 | このプロパティ何が入るんだっけ | ③ の型定義 |
 | エラーの意味が分からない | ① の Errors |
-| そもそも設計が分からない | ① の Agents |
 
 ---
 
