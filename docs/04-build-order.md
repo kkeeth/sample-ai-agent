@@ -15,12 +15,12 @@
 
 ## 全体像
 
-| フェーズ | Step | ゴール |
-| --- | --- | --- |
-| 1. 動かす | 0〜2 | 1ファイルでエージェントが動く |
-| 2. エージェントらしくする | 3〜4 | モデルがツールを選ぶようになる |
-| 3. 事故を止める | 5〜8 | 他人に渡しても壊れない |
-| 4. 配れるようにする | 9〜12 | 初見の人が15分で動かせる |
+| フェーズ                  | Step  | ゴール                         |
+| ------------------------- | ----- | ------------------------------ |
+| 1. 動かす                 | 0〜2  | 1ファイルでエージェントが動く  |
+| 2. エージェントらしくする | 3〜4  | モデルがツールを選ぶようになる |
+| 3. 事故を止める           | 5〜8  | 他人に渡しても壊れない         |
+| 4. 配れるようにする       | 9〜12 | 初見の人が15分で動かせる       |
 
 ---
 
@@ -32,33 +32,33 @@
 
 言語に関係ない一次情報です。**この手順書のステップと、ほぼ1対1で対応しています。**
 
-| この手順書の | 読むページ |
-| --- | --- |
-| 全体像を掴む | [Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) |
-| **Step 1**（名簿を書く） | [Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools) |
-| **Step 2**（ループを閉じる） | [Handle tool calls](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls) |
+| この手順書の                     | 読むページ                                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 全体像を掴む                     | [Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)                 |
+| **Step 1**（名簿を書く）         | [Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools)                  |
+| **Step 2**（ループを閉じる）     | [Handle tool calls](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls)        |
 | **Step 4**（description を直す） | [Define tools → Best practices](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools) |
-| ループを自分で書きたくない | [Tool Runner](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner) |
-| 使えるツールの一覧・オプション | [Tool reference](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-reference) |
+| ループを自分で書きたくない       | [Tool Runner](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner)                    |
+| 使えるツールの一覧・オプション   | [Tool reference](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-reference)              |
 
 そのほか、必要になったときに。
 
-| 見たいもの | URL |
-| --- | --- |
-| モデルIDと価格 | https://platform.claude.com/docs/en/about-claude/models/overview |
-| エラーコードの意味 | https://platform.claude.com/docs/en/api/errors |
-| 出力の形を保証する | https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use |
-| JSONスキーマで返させる | https://platform.claude.com/docs/en/build-with-claude/structured-outputs |
-| プロンプトキャッシュ | https://platform.claude.com/docs/en/build-with-claude/prompt-caching |
-| thinking の設定 | https://platform.claude.com/docs/en/build-with-claude/thinking |
-| ツール設計の考え方（読み物） | https://www.anthropic.com/engineering/writing-tools-for-agents |
+| 見たいもの                   | URL                                                                           |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| モデルIDと価格               | https://platform.claude.com/docs/en/about-claude/models/overview              |
+| エラーコードの意味           | https://platform.claude.com/docs/en/api/errors                                |
+| 出力の形を保証する           | https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use |
+| JSONスキーマで返させる       | https://platform.claude.com/docs/en/build-with-claude/structured-outputs      |
+| プロンプトキャッシュ         | https://platform.claude.com/docs/en/build-with-claude/prompt-caching          |
+| thinking の設定              | https://platform.claude.com/docs/en/build-with-claude/thinking                |
+| ツール設計の考え方（読み物） | https://www.anthropic.com/engineering/writing-tools-for-agents                |
 
 > 💡 **URLの末尾に `.md` を付けると、生の Markdown が返ります。**
 > `https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools.md`
 > Claude Code に「このURLを読んで」と渡すときはこちらが速いです。
 
 > **公式も同じことを言っています。** Define tools の Best practices に、
-> *"Provide extremely detailed descriptions. **This is by far the most important factor in tool performance.**"*
+> _"Provide extremely detailed descriptions. **This is by far the most important factor in tool performance.**"_
 > とあります。Step 4 でわざと失敗させるのは、これを体で確認するためです。
 
 ### ② SDK の使い方 ── TypeScript でどう書くか
@@ -79,26 +79,26 @@ node_modules/@anthropic-ai/sdk/resources/messages/messages.d.ts
 
 このファイルに、この手順書で使う型が全部あります。
 
-| 型 | 何を表すか |
-| --- | --- |
-| `Anthropic.Tool` | ツールの定義（名簿の1行） |
-| `Anthropic.MessageParam` | `messages` 配列の1要素 |
-| `Anthropic.ToolUseBlock` | モデルが返してくる「これを呼べ」 |
-| `Anthropic.ToolResultBlockParam` | こちらが返す実行結果 |
-| `Anthropic.Message` | API のレスポンス全体 |
+| 型                               | 何を表すか                       |
+| -------------------------------- | -------------------------------- |
+| `Anthropic.Tool`                 | ツールの定義（名簿の1行）        |
+| `Anthropic.MessageParam`         | `messages` 配列の1要素           |
+| `Anthropic.ToolUseBlock`         | モデルが返してくる「これを呼べ」 |
+| `Anthropic.ToolResultBlockParam` | こちらが返す実行結果             |
+| `Anthropic.Message`              | API のレスポンス全体             |
 
 **型を見れば「何を書けるか」が分かります。** 「`input_schema` に何が入るのか」「`tool_result` に `is_error` を付けられるのか」といった疑問は、ドキュメントを探すより定義ジャンプのほうが速いことが多いです。
 
 ### 迷ったときの探し方
 
-| 症状 | 見るところ |
-| --- | --- |
-| リクエストの形が分からない | ① の Tool use overview |
-| ツール定義の書き方 | ① の Define tools |
-| ループの組み方 | ① の Handle tool calls |
-| TypeScript での書き方が分からない | ③ の型定義に飛ぶ |
-| このプロパティ何が入るんだっけ | ③ の型定義 |
-| エラーの意味が分からない | ① の Errors |
+| 症状                              | 見るところ             |
+| --------------------------------- | ---------------------- |
+| リクエストの形が分からない        | ① の Tool use overview |
+| ツール定義の書き方                | ① の Define tools      |
+| ループの組み方                    | ① の Handle tool calls |
+| TypeScript での書き方が分からない | ③ の型定義に飛ぶ       |
+| このプロパティ何が入るんだっけ    | ③ の型定義             |
+| エラーの意味が分からない          | ① の Errors            |
 
 ---
 
@@ -130,7 +130,7 @@ echo '.env' >> .gitignore
 // scratch.ts
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic();   // .env は Bun が自動で読む
+const client = new Anthropic(); // .env は Bun が自動で読む
 
 const res = await client.messages.create({
   model: "claude-opus-5",
@@ -151,13 +151,13 @@ bun run scratch.ts
 
 **失敗したら**
 
-| 症状 | 原因 |
-| --- | --- |
+| 症状                                | 原因                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- |
 | `400` + `credit balance is too low` | **残高不足。キーとネットワークは正常。**「Claude Code は動くのに」は無関係 → 下の囲みを見る |
-| `401` | キーが違う。`.env` を確認 |
-| `404` | モデルIDが違う |
-| `429` | レート上限 |
-| タイムアウト・接続不可 | プロキシ / VPN。`HTTPS_PROXY` を設定 |
+| `401`                               | キーが違う。`.env` を確認                                                                   |
+| `404`                               | モデルIDが違う                                                                              |
+| `429`                               | レート上限                                                                                  |
+| タイムアウト・接続不可              | プロキシ / VPN。`HTTPS_PROXY` を設定                                                        |
 
 > ### ⚠ 「Claude Code は動いているのに 400 が返る」
 >
@@ -165,10 +165,10 @@ bun run scratch.ts
 >
 > Console > Settings > Billing に別々の項目があります。
 >
-> | | 何に使えるか |
-> | --- | --- |
-> | **Plans**（Pro / Max） | claude.ai と Claude Code。API では使えない |
-> | **Credits**（Credit balance） | Messages API。**必要なのはこちら** |
+> |                               | 何に使えるか                               |
+> | ----------------------------- | ------------------------------------------ |
+> | **Plans**（Pro / Max）        | claude.ai と Claude Code。API では使えない |
+> | **Credits**（Credit balance） | Messages API。**必要なのはこちら**         |
 >
 > 「Claude Code の API キー」というものは存在しません。プランをアップグレードしても API は動きません。
 >
@@ -202,9 +202,9 @@ printf '# 経費精算ルール\n\n締め切りは翌月5営業日以内です�
 
 ```diff
  import Anthropic from "@anthropic-ai/sdk";
- 
+
  const client = new Anthropic();
- 
+
 +const tools: Anthropic.Tool[] = [
 +  {
 +    name: "read_file",
@@ -224,7 +224,7 @@ printf '# 経費精算ルール\n\n締め切りは翌月5営業日以内です�
 +  tools,
 +  messages: [{ role: "user", content: "docs/expense-policy.md を読んで要約して" }],
  });
- 
+
 -console.log(res.content);
 +console.log("stop_reason:", res.stop_reason);
 +console.dir(res.content, { depth: null });
@@ -272,21 +272,7 @@ stop_reason: tool_use
  import Anthropic from "@anthropic-ai/sdk";
 +import { readFile } from "node:fs/promises";
 +import { join } from "node:path";
- 
- const client = new Anthropic();
- 
- const tools: Anthropic.Tool[] = [
-   {
-     name: "read_file",
-     description: "社内資料の中身を返す。パスが分からないときは推測せず、その旨を答えること。",
-     input_schema: {
-       type: "object",
-       properties: { path: { type: "string", description: "資料フォルダからの相対パス" } },
-       required: ["path"],
-     },
-   },
- ];
- 
+
 -const res = await client.messages.create({
 -  model: "claude-opus-5",
 -  max_tokens: 1024,
@@ -363,7 +349,7 @@ bun run scratch.ts
 > **`tools` 配列が空です。** 上の差分で `const tools = [...]` の中身を省略記号のまま残していないか確認してください。
 >
 > ```ts
-> const tools: Anthropic.Tool[] = [ /* Step 1 と同じ */ ];   // ← これは空配列
+> const tools: Anthropic.Tool[] = [/* Step 1 と同じ */]; // ← これは空配列
 > ```
 >
 > ツールを1つも渡されていないモデルは、ごく普通のチャット相手として振る舞います。「内容を貼り付けてください」「クリップアイコンから添付できます」といった**チャットUIの案内が出てきたら、この症状**です。ツールを持っているモデルは絶対にそう答えません。
@@ -371,7 +357,7 @@ bun run scratch.ts
 > 切り分けは1行で済みます。
 >
 > ```ts
-> console.log("tools:", tools.length);   // 0 なら原因はこれ
+> console.log("tools:", tools.length); // 0 なら原因はこれ
 > ```
 
 > 🎉 **ここで動くものが完成です。** 合宿でいう「初日中に通す最小構成」がここ。100行未満です。
@@ -393,6 +379,10 @@ workspace/docs/*.md      (資料を4〜5本に増やす)
 
 資料を増やします。**互いに参照し合う内容にする**のがコツです（「詳細は入社手続きを参照」など）。1回の `read_file` で終わらなくなり、多段の動きが出ます。
 
+> **既存ツールの description も直します。** Step 1 の `read_file` には「パスが分からないときは推測せず、その旨を答えること」と書きました。当時は他に手が無かったので正しかったのですが、いま `list_files` と `search_files` が増えたので、**そちらへ誘導する文面に変えないと read_file が行き止まりのまま**になります。
+>
+> **ツールを1つ足したら、既存ツールの description も見直す。** ツールは互いに「次はこれを使え」と参照し合う関係にあるので、増やすたびに全体を見る必要があります。
+
 ### 差分
 
 ```diff
@@ -400,15 +390,18 @@ workspace/docs/*.md      (資料を4〜5本に増やす)
 -import { readFile } from "node:fs/promises";
 +import { readFile, readdir } from "node:fs/promises";
  import { join } from "node:path";
- 
+
  const client = new Anthropic();
- 
+
 +const ROOT = "workspace";
 +
  const tools: Anthropic.Tool[] = [
    {
      name: "read_file",
-     description: "社内資料の中身を返す。パスが分からないときは推測せず、その旨を答えること。",
+-    description: "社内資料の中身を返す。パスが分からないときは推測せず、その旨を答えること。",
++    description:
++      "社内資料の中身を返す。" +
++      "パスが分からないときは、先に list_files か search_files を使うこと。",
      input_schema: {
        type: "object",
        properties: { path: { type: "string", description: "資料フォルダからの相対パス" } },
@@ -435,7 +428,7 @@ workspace/docs/*.md      (資料を4〜5本に増やす)
 +    },
 +  },
  ];
- 
+
 +async function walk(dir: string, acc: string[] = []): Promise<string[]> {
 +  for (const e of await readdir(dir, { withFileTypes: true })) {
 +    if (e.name.startsWith(".")) continue;
@@ -504,11 +497,11 @@ bun run scratch.ts "入社直後の経費はどう精算する?"        # 相互
 
 **複合語では0件になるが、分割すればヒットする**質問を選びます。ここを外すと差が出ません。
 
-| 質問 | 複合語のまま | 分割すると |
-| --- | --- | --- |
+| 質問                        | 複合語のまま                    | 分割すると                 |
+| --------------------------- | ------------------------------- | -------------------------- |
 | リモートワークの申請方法は? | 「リモートワーク申請」= **0件** | リモートワーク=1 / 申請=10 |
-| 出張の宿泊費の上限は? | 「宿泊上限」= **0件** | 宿泊=1 / 上限=7 |
-| 研修はいつまでに受ける? | 「研修受講期限」= **0件** | 研修=2 / 受講=2 |
+| 出張の宿泊費の上限は?       | 「宿泊上限」= **0件**           | 宿泊=1 / 上限=7            |
+| 研修はいつまでに受ける?     | 「研修受講期限」= **0件**       | 研修=2 / 受講=2            |
 
 **「経費精算の締め切りは?」では差が出ません。** 資料に「経費精算」が複合語のまま5箇所あるので、雑な検索でも当たってしまいます。
 
@@ -571,10 +564,10 @@ bun run scripts/measure.ts "リモートワークの申請方法は?"
 
 ### 読み方
 
-| | 手数の目安 | ばらつき |
-| --- | --- | --- |
-| description あり | 2回前後（search → read） | 小さい。毎回ほぼ同じ |
-| description なし | 3回以上 | **大きい。実行ごとに違う道を通る** |
+|                  | 手数の目安               | ばらつき                           |
+| ---------------- | ------------------------ | ---------------------------------- |
+| description あり | 2回前後（search → read） | 小さい。毎回ほぼ同じ               |
+| description なし | 3回以上                  | **大きい。実行ごとに違う道を通る** |
 
 **平均だけでなく、ばらつきを見てください。** description の役割は「正解に辿り着かせること」より **「回り道を減らすこと」** なので、効果はばらつきの縮小として現れます。
 
@@ -590,10 +583,10 @@ bun run scripts/measure.ts "リモートワークの申請方法は?"
 
 差分を戻して、もう一度5回測ります。手数が元に戻れば確認完了です。
 
-| ✕ | ○ |
-| --- | --- |
-| `"ファイルを読む"` | `"社内資料の中身を返す。パスが分からないときは先に list_files を使うこと"` |
-| `"検索"` | `"全文検索してヒット行を返す。キーワードが明確なときは list_files より先に使う。1語ずつ試すこと"` |
+| ✕                  | ○                                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `"ファイルを読む"` | `"社内資料の中身を返す。パスが分からないときは先に list_files を使うこと"`                        |
+| `"検索"`           | `"全文検索してヒット行を返す。キーワードが明確なときは list_files より先に使う。1語ずつ試すこと"` |
 
 **「何をするか」ではなく「いつ使うか」** を書くのがコツです。
 
@@ -623,21 +616,21 @@ bun run scripts/measure.ts "リモートワークの申請方法は?"
      tools,
      messages,
    });
- 
+
    for (const b of res.content) {
      if (b.type === "text") console.log(b.text);
    }
- 
+
    messages.push({ role: "assistant", content: res.content });
- 
+
 -  if (res.stop_reason !== "tool_use") break;
 +  if (res.stop_reason !== "tool_use") { finished = true; break; }
- 
+
    /* ... 中略 ... */
- 
+
    messages.push({ role: "user", content: results });
  }
- 
+
 +if (!finished) {
 +  console.warn(`⚠ 最大 ${MAX_TURNS} 周に達したので打ち切りました。`);
 +  console.warn(`  同じツールを呼び続けていないか、上のログを見てください。`);
@@ -667,7 +660,7 @@ bun run scratch.ts "入社直後の経費はどう精算する?"
 ```diff
  const MAX_TURNS = 20;
  let finished = false;
- 
+
 +const PRICE = { input: 5.0, output: 25.0 };   // $ / 1M tokens
 +let totalIn = 0;
 +let totalOut = 0;
@@ -679,7 +672,7 @@ bun run scratch.ts "入社直後の経費はどう精算する?"
      tools,
      messages,
    });
- 
+
 +  totalIn += res.usage.input_tokens;
 +  totalOut += res.usage.output_tokens;
 +  const cost = (totalIn * PRICE.input + totalOut * PRICE.output) / 1_000_000;
@@ -721,9 +714,9 @@ bun run scratch.ts "入社直後の経費はどう精算する?"
  import { readFile, readdir } from "node:fs/promises";
 -import { join } from "node:path";
 +import { join, resolve, relative } from "node:path";
- 
+
  const client = new Anthropic();
- 
+
 -const ROOT = "workspace";
 +const ROOT = resolve("workspace");
 +const MAX_TOOL_OUTPUT_CHARS = 8_000;
@@ -970,14 +963,14 @@ bun run scratch.ts "経費精算のルールをまとめて summary.md に保存
 
 レイヤーでも機能でもなく、**「誰がどれくらいの頻度で触るか」**で割ります。テンプレートは「触る場所が一目で分かる」ことが最優先だからです。
 
-| 移す先 | `scratch.ts` のどこを移すか | 触る頻度 |
-| --- | --- | --- |
-| `src/tools.ts` | `tools` 配列、`runTool`、`walk` / `searchFiles`、`safePath` / `clip`、`WRITE_TOOLS` | **毎日触る** |
-| `src/config.ts` | `MODEL`、`MAX_TURNS`、`PRICE`、`ROOT`、`MAX_TOOL_OUTPUT_CHARS` | たまに触る |
-| `src/agent.ts` | ループ本体、承認ゲート、システムプロンプト | ほぼ触らない（読むだけ） |
-| `src/usage.ts` | `totalIn` / `totalOut` とコスト計算 | 触らない |
-| `src/cli.ts` | `process.argv` の処理、結果表示 | 触らない |
-| `scripts/measure.ts` | （移動しない。Step 4 で作った計測ツールのまま） | 触らない |
+| 移す先               | `scratch.ts` のどこを移すか                                                         | 触る頻度                 |
+| -------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `src/tools.ts`       | `tools` 配列、`runTool`、`walk` / `searchFiles`、`safePath` / `clip`、`WRITE_TOOLS` | **毎日触る**             |
+| `src/config.ts`      | `MODEL`、`MAX_TURNS`、`PRICE`、`ROOT`、`MAX_TOOL_OUTPUT_CHARS`                      | たまに触る               |
+| `src/agent.ts`       | ループ本体、承認ゲート、システムプロンプト                                          | ほぼ触らない（読むだけ） |
+| `src/usage.ts`       | `totalIn` / `totalOut` とコスト計算                                                 | 触らない                 |
+| `src/cli.ts`         | `process.argv` の処理、結果表示                                                     | 触らない                 |
+| `scripts/measure.ts` | （移動しない。Step 4 で作った計測ツールのまま）                                     | 触らない                 |
 
 ```bash
 mkdir src
@@ -1037,10 +1030,16 @@ if (err.status === 400 && /credit balance/i.test(err.message)) {
   console.error("     Console > Settings > Billing の Credit balance を確認。");
   console.error("     ※ キーもネットワークも正常です。認証は通っています。");
 }
-if (err.status === 401) console.error("  → キーが違います。.env を確認してください。");
-if (err.status === 404) console.error("  → モデルIDが違います。config.ts を確認してください。");
-if (err.status === 429) console.error("  → レート上限です。少し待つか、運営に連絡してください。");
-if (!err.status)        console.error("  → ネットワークに届いていません。プロキシ / VPN を確認してください。");
+if (err.status === 401)
+  console.error("  → キーが違います。.env を確認してください。");
+if (err.status === 404)
+  console.error("  → モデルIDが違います。config.ts を確認してください。");
+if (err.status === 429)
+  console.error("  → レート上限です。少し待つか、運営に連絡してください。");
+if (!err.status)
+  console.error(
+    "  → ネットワークに届いていません。プロキシ / VPN を確認してください。",
+  );
 ```
 
 ### 確認
@@ -1107,15 +1106,15 @@ env.example
 
 ### 書く内容
 
-| 節 | 中身 |
-| --- | --- |
-| セットアップ | `bun install` → `cp env.example .env` → `bun run check` の3行だけ |
-| 動かす | 実行例と、**出力サンプル** |
-| ファイル構成 | どこを触ればいいか |
-| 自分のツールを足す | `tools.ts` の2箇所を触るだけ、と明示 |
-| `description` の書き方 | ✕/○ の対比表 |
-| 入っている安全装置 | 一覧と、**外さない理由** |
-| 困ったら | **自分が踏んだ躓きの一覧** |
+| 節                     | 中身                                                              |
+| ---------------------- | ----------------------------------------------------------------- |
+| セットアップ           | `bun install` → `cp env.example .env` → `bun run check` の3行だけ |
+| 動かす                 | 実行例と、**出力サンプル**                                        |
+| ファイル構成           | どこを触ればいいか                                                |
+| 自分のツールを足す     | `tools.ts` の2箇所を触るだけ、と明示                              |
+| `description` の書き方 | ✕/○ の対比表                                                      |
+| 入っている安全装置     | 一覧と、**外さない理由**                                          |
+| 困ったら               | **自分が踏んだ躓きの一覧**                                        |
 
 **トラブルシューティング表は、Step 0〜11 で自分が踏んだものをそのまま書きます。** 先に書くと想像で書くことになって当たりません。
 
@@ -1138,13 +1137,13 @@ cd test-clone
 
 **上から順に潰します。** 下の層を疑う前に、必ず上を確認してください。
 
-| 層 | 確認方法 | 通らないときに見るところ |
-| --- | --- | --- |
-| 1. 認証・回線 | `bun run check` | `.env` / 残高 / プロキシ |
-| 1.5 リクエストの組み立て | 400 が返るか | `non-empty content` なら Step 7 のガード2つ |
-| 2. ツール単体 | ツール関数を直接呼ぶ | 普通のプログラミングのバグ |
-| 3. モデルがツールを選ぶ | ログの `→` 行が出るか | まず `tools.length` が 0 でないか。次に `description` に「いつ使うか」があるか |
-| 4. モデルの回答品質 | 最終出力 | ツールの戻り値 → システムプロンプト の順 |
+| 層                       | 確認方法              | 通らないときに見るところ                                                       |
+| ------------------------ | --------------------- | ------------------------------------------------------------------------------ |
+| 1. 認証・回線            | `bun run check`       | `.env` / 残高 / プロキシ                                                       |
+| 1.5 リクエストの組み立て | 400 が返るか          | `non-empty content` なら Step 7 のガード2つ                                    |
+| 2. ツール単体            | ツール関数を直接呼ぶ  | 普通のプログラミングのバグ                                                     |
+| 3. モデルがツールを選ぶ  | ログの `→` 行が出るか | まず `tools.length` が 0 でないか。次に `description` に「いつ使うか」があるか |
+| 4. モデルの回答品質      | 最終出力              | ツールの戻り値 → システムプロンプト の順                                       |
 
 **3 の層で止まっている人が一番多い**です。ログに `→` が出ていなければ、順に2つを疑います。
 
@@ -1163,16 +1162,16 @@ bun -e 'const {runTool} = await import("./src/tools.ts"); console.log(await runT
 
 この手順書は、そのまま参加者への進行指示になります。
 
-| 合宿の時刻 | 到達目標 | 判定 |
-| --- | --- | --- |
-| 初日 10:00 | **Step 0** | `bun run check` が緑 |
-| 初日 13:00 | **Step 2** | ツール1個でループが1周でも回る |
-| 初日 16:00（中間チェック） | **Step 3〜4** | 質問を変えると呼ばれるツールが変わる |
-| 2日目 12:00 | **Step 5〜8** | 安全装置が入っている |
-| 2日目 15:00（コードフリーズ） | **Step 9 以降は任意** | デモが通ればよい |
+| 合宿の時刻                    | 到達目標              | 判定                                 |
+| ----------------------------- | --------------------- | ------------------------------------ |
+| 初日 10:00                    | **Step 0**            | `bun run check` が緑                 |
+| 初日 13:00                    | **Step 2**            | ツール1個でループが1周でも回る       |
+| 初日 16:00（中間チェック）    | **Step 3〜4**         | 質問を変えると呼ばれるツールが変わる |
+| 2日目 12:00                   | **Step 5〜8**         | 安全装置が入っている                 |
+| 2日目 15:00（コードフリーズ） | **Step 9 以降は任意** | デモが通ればよい                     |
 
 **中間チェックで見るのは Step 3 到達だけ**です。設計の良し悪しには触れません。触れると手戻りが発生します。
 
 ---
 
-*関連： [運営ランブック](01-runbook.md) ／ [電話越しの現場監督](02-agent-primer.md) ／ [キックオフ台本](03-kickoff-script.md)*
+_関連： [運営ランブック](01-runbook.md) ／ [電話越しの現場監督](02-agent-primer.md) ／ [キックオフ台本](03-kickoff-script.md)_

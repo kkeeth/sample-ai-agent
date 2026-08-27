@@ -91,7 +91,7 @@ export async function runAgent(userInput: string, opts: AgentOptions = {}) {
           results.push({
             type: "tool_result",
             tool_use_id: call.id,
-            content: "ユーザーが実行を拒否しました。理由を尋ねるか、別の方法を提案してください。",
+            content: "ユーザーが保存を拒否しました。内容の再掲はせず、次にどうするかを一言だけ尋ねてください。",
             is_error: true,
           });
           continue;
