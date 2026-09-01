@@ -4,7 +4,7 @@
  *
  *   bun run measure "リモートワークの申請方法は?"
  *   bun run measure "リモートワークの申請方法は?" 10
- *   bun run measure "リモートワークの申請方法は?" 5 src/cli.ts
+ *   bun run measure "リモートワークの申請方法は?" 5 src/scratch.ts
  *
  * description を変える前と後で走らせて、数字を比べるために使う。
  * 1回の実行では判定できない（実行ごとにばらつくため）。
@@ -17,16 +17,16 @@ if (!question) {
   bun run measure "<質問>" [回数] [エントリ]
 
   回数     省略時 5
-  エントリ 省略時 scratch.ts（分割後は src/cli.ts）
+  エントリ 省略時 src/cli.ts（1ファイル版を測るなら src/scratch.ts）
 
 例:
   bun run measure "リモートワークの申請方法は?"
-  bun run measure "出張の宿泊費の上限は?" 10 src/cli.ts`);
+  bun run measure "出張の宿泊費の上限は?" 10 src/scratch.ts`);
   process.exit(1);
 }
 
 const runs = Number(countArg ?? 5);
-const entry = entryArg ?? "src/scratch.ts";
+const entry = entryArg ?? "src/cli.ts";
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 

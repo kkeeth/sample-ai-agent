@@ -5,6 +5,10 @@
 薄く作ってあります。抽象化された基底クラスもプラグイン機構もありません。
 エージェントのループは `src/agent.ts` に 30 行ほどで生で書いてあるので、まず読んでください。
 
+> **編集するのは `src/tools.ts` の1本だけです。**
+> ループ・コスト計測・承認ゲート・安全装置は動く状態で入っています。触らなくても全部効きます。
+> 書き方に詰まったら、丸ごとコピーできる[作例が3本](examples/README.md)あります。
+
 ---
 
 ## セットアップ（15分）
@@ -21,13 +25,23 @@ bun run check           # 疎通確認
 
 ## 動かす
 
+初期状態の `src/tools.ts` には、動作確認用のダミーツール（`get_current_time`）が1つだけ入っています。
+
 ```bash
+bun run agent "今日は何日?" -v      # -v はモデルの考えを表示
+```
+
+中身のある例を先に見たいときは、作例を丸ごとコピーしてください。
+
+```bash
+cp examples/doc-agent/tools.ts src/tools.ts
+
 bun run agent "経費精算の締め切りはいつ?"
-bun run agent "リモートワークは週何日まで?" -v      # モデルの考えを表示
+bun run agent "リモートワークは週何日まで?" -v
 bun run agent "障害対応の初動をまとめて incident.md に保存して"
 ```
 
-`workspace/docs/` にダミーの社内資料が入っていて、エージェントはこれを検索・読解して答えます。
+`workspace/docs/` にダミーの社内資料が入っていて、このエージェントはこれを検索・読解して答えます。
 
 実行するとこんなログが出ます。
 
@@ -55,19 +69,27 @@ bun run agent "障害対応の初動をまとめて incident.md に保存して"
 
 ```
 src/
-  agent.ts    ← ループ本体。まずここを読む（30行）
-  tools.ts    ← ツールの定義と実装。ここを増やしていく
+  tools.ts    ← ★ここだけ編集する。SYSTEM_PROMPT / tools / runTool
+  agent.ts    ← ループ本体（30行）。読むのは自由、書く必要はない
   config.ts   ← モデル、最大ターン数、単価
+  guard.ts    ← 安全装置（パス防御・戻り値の切り詰め）
   usage.ts    ← トークン数とコストの集計
   cli.ts      ← エントリポイント
+  scratch.ts  ← 1ファイル版（docs/05-reference.md の Step 8 相当）
+examples/
+  doc-agent/    ← 作例① ローカルのファイルを読む
+  http-agent/   ← 作例② HTTP を叩く
+  state-agent/  ← 作例③ 状態を書き換える
 scripts/
   check.ts    ← 疎通確認
   measure.ts  ← 同じ質問をN回投げて手数のばらつきを測る
 workspace/
   docs/       ← エージェントが読む資料（差し替えてよい）
   out/        ← エージェントが書き出す先
-docs/         ← 合宿の資料（運営ランブック・エージェント入門・キックオフ台本）
+docs/         ← 合宿の資料
 ```
+
+`examples/*/tools.ts` は `src/tools.ts` にそのまま入る形になっています。上書きコピーで切り替えてください。
 
 ## 自分のツールを足す
 
@@ -122,8 +144,8 @@ export const WRITE_TOOLS = new Set(["write_note", "post_slack"]);
 | 仕掛け | 場所 | 理由 |
 | --- | --- | --- |
 | 最大ターン数の上限（20周） | `config.ts` の `MAX_TURNS` | 無限ループでコストが飛ぶのを防ぐ |
-| ツール戻り値の文字数上限 | `config.ts` の `MAX_TOOL_OUTPUT_CHARS` | 長い戻り値は以降の全周回で送り直されるため |
-| パストラバーサル防御 | `tools.ts` の `safePath()` | `workspace/` の外を触らせない |
+| ツール戻り値の文字数上限 | `config.ts` の `MAX_TOOL_OUTPUT_CHARS` ／ `guard.ts` の `clip()` | 長い戻り値は以降の全周回で送り直されるため |
+| パストラバーサル防御 | `guard.ts` の `safePath()` | `workspace/` の外を触らせない |
 | 書き込みの承認ゲート | `agent.ts` の `askApproval()` | 事故の被害範囲を人間が決める |
 | コスト表示 | `usage.ts` | 感覚を掴むため。監視ではありません |
 
@@ -163,7 +185,12 @@ bun run measure "出張の宿泊費の上限は?" 10
 
 ## 合宿の資料
 
+- [これだけ](docs/00-tldr.md) — **事前に読むのはこの1枚（5分）**。キックオフのスライドもここから作る
 - [運営ランブック](docs/01-runbook.md) — 準備チェックリスト（運営向け）
-- [電話越しの現場監督](docs/02-agent-primer.md) — AIエージェントとは何か
+- [電話越しの現場監督](docs/02-agent-primer.md) — AIエージェントとは何か（10分）
 - [キックオフ台本](docs/03-kickoff-script.md) — 初日朝の説明資料（運営向け）
-- [作る順番](docs/04-build-order.md) — このテンプレートをゼロから組み立てる手順と確認方法
+- [ハンズオン](docs/04-handson.md) — **Day 1 朝の45分。ここでレベルを揃える**
+- [作る順番](docs/05-reference.md) — ゼロから組み立てる全12ステップ。詰まったときに引くリファレンス
+- [作例3本](examples/README.md) — 丸ごとコピーしてよい
+- [確認事項一覧](docs/06-open-questions.md) — **CTO / Corp Eng に確認すること11件**（運営向け）
+- [ADR-001](docs/adr/001-api-environment.md) — API 利用環境をどう用意するか（提案中・承認待ち）

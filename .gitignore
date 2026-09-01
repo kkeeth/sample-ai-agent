@@ -7,3 +7,4 @@ node_modules/
 # エージェントが書き出したもの
 workspace/out/*
 !workspace/out/.gitkeep
+workspace/state/

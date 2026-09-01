@@ -1,25 +1,18 @@
+/**
+ * エージェントループ本体。ここは触らなくてよい。
+ *
+ * 中身を知りたい人は下の runAgent() を読むこと。30行しかない。
+ * 編集するのは src/tools.ts です。
+ */
 import Anthropic from "@anthropic-ai/sdk";
 import { MODEL, MAX_TOKENS, MAX_TURNS } from "./config.ts";
-import { tools, runTool, WRITE_TOOLS } from "./tools.ts";
+import { SYSTEM_PROMPT, tools, runTool, WRITE_TOOLS } from "./tools.ts";
 import { createUsageTracker } from "./usage.ts";
 
 const client = new Anthropic();
 
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
 const warn = (s: string) => `\x1b[33m${s}\x1b[0m`;
-
-/**
- * 監督への申し送り。役割と、守ってほしい方針を書く。
- * 手順を細かく書きすぎると、ただのワークフローになってしまうので注意。
- */
-const SYSTEM_PROMPT = `あなたは社内資料を調べて質問に答えるアシスタントです。
-
-守ること:
-- 答える前に必ず資料を確認する。自分の記憶だけで答えない
-- 根拠にしたファイル名を必ず示す
-- 資料に書かれていないことは「資料には見当たりません」と答える。推測で埋めない
-- 日本語で書くこと。最終的な回答だけでなく、ツールを使う前の短い前置きも日本語にする
-- 簡潔に`;
 
 export type AgentOptions = {
   /** 書き込み系ツールの承認をスキップする */
